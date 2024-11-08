@@ -1,0 +1,17 @@
+{
+  "name": "covid-project",
+  "version": "1.0.0",
+  "description": "A full-stack COVID-19 Tracking Project with Express and Streamlit",
+  "main": "server.js",
+  "scripts": {
+    "start-backend": "node backend/server.js",
+    "start-frontend": "streamlit run frontend/app.py",
+    "dev": "concurrently \"npm run start-backend\" \"npm run start-frontend\""
+  },
+  "dependencies": {
+    "concurrently": "^7.3.0",
+    "dotenv": "^16.4.5"
+  },
+  "author": "Your Name",
+  "license": "ISC"
+}
