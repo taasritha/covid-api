@@ -2,10 +2,8 @@ import streamlit as st
 import requests
 import pandas as pd
 
-# Set the base URL of your backend API
 API_URL = "http://localhost:8000/covid"
 
-# Initialize session state variables for login
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 if "username" not in st.session_state:
@@ -13,7 +11,6 @@ if "username" not in st.session_state:
 if "region" not in st.session_state:
     st.session_state.region = ""
 
-# Function to fetch data from the backend
 def fetch_data(endpoint):
     try:
         response = requests.get(f"{API_URL}/{endpoint}")
@@ -25,8 +22,7 @@ def fetch_data(endpoint):
             for item in data:
                 if isinstance(item, dict) and "_id" in item:
                     del item["_id"]
-        
-        # If the data is a single dictionary (e.g., for detailed data), remove the _id
+                    
         elif isinstance(data, dict) and "_id" in data:
             del data["_id"]
         
@@ -35,18 +31,14 @@ def fetch_data(endpoint):
         st.error(f"Error fetching data: {e}")
         return None
 
-
-# Function for Normal User page (viewing tables)
 def normal_user_page():
     st.title("COVID-19 Tracking Dashboard - Normal User")
-
-    # Dropdown to choose the type of data to view
+    
     view_option = st.selectbox("Select Data to View", ["Active Cases by Region", 
                                                       "Detailed COVID-19 Statistics by Region", 
                                                       "Hospital Resources by Region", 
                                                       "Vaccination Status by Region"])
 
-    # Based on selection, fetch and display the corresponding data
     if view_option == "Active Cases by Region":
         st.subheader("Active COVID-19 Cases by Region")
         cases_data = fetch_data("cases")
@@ -75,16 +67,13 @@ def normal_user_page():
         if vaccination_data:
             st.dataframe(pd.DataFrame(vaccination_data))
 
-# Function for Hospitals' page (login and update)
 def hospital_page():
     st.title("COVID-19 Dashboard - Hospital Login")
 
     if not st.session_state.logged_in:
-        # Display login form
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         if st.button("Login"):
-            # Dummy login logic (replace with backend authentication)
             if username == "mumbai_hospital" and password == "mumbai":
                 st.session_state.logged_in = True
                 st.session_state.username = username
@@ -101,10 +90,7 @@ def hospital_page():
                 st.error("Invalid credentials!")
 
     if st.session_state.logged_in:
-        # Show authenticated content for the logged-in user
         st.success(f"Welcome, {st.session_state.username}! Region: {st.session_state.region.capitalize()}")
-
-        # Fetch and display region-specific data
         region = st.session_state.region.lower()
         cases_data = fetch_data(f"cases/{region}")
         if cases_data:
@@ -115,7 +101,6 @@ def hospital_page():
             st.subheader("Current Hospital Resources")
             st.dataframe(pd.DataFrame([hospital_resources]))
 
-            # Update section
             st.subheader("Update COVID-19 Data")
             update_section = st.radio("Select Update Type", ("Cases Data", "Hospital Resources"))
 
@@ -152,8 +137,7 @@ def hospital_page():
                         st.success("Hospital resources updated successfully!")
                     else:
                         st.error(f"Failed to update hospital resources: {response.text}")
-
-# Main function for page navigation
+                        
 def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Choose a page", ("Normal User", "Hospital"))
